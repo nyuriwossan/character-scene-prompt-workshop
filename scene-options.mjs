@@ -123,6 +123,64 @@ jpShrineCourt|神社の境内|Japanese shrine courtyard|the courtyard of a Japan
 jpHotSpringTown|温泉街|Japanese hot spring town street|a street in a Japanese hot spring town
 jpRyokan|旅館の廊下|traditional Japanese ryokan corridor|a corridor inside a traditional Japanese inn`)
   ]},
+  {id: 'westernFantasy', label: '西洋ファンタジー', children: [
+    group('court', '王城・宮廷', `wfGrandHall|王城の大広間|grand hall of a fantasy castle|the great hall of a royal castle
+wfThrone|玉座の間|medieval fantasy throne room|a vaulted throne room in a medieval castle
+wfGallery|王宮の回廊|ornate royal palace corridor|an ornate corridor in a royal palace
+wfChamber|王族の私室（西洋王城）|private royal castle chamber|a private chamber in the royal wing of a castle
+wfBallroom|舞踏会場|grand fantasy ballroom|a grand ballroom with a wide parquet floor
+wfTower|城の塔の階段|spiral staircase inside a castle tower|a spiral staircase winding up a castle tower
+wfCourtyard|城の中庭|medieval castle courtyard|a courtyard enclosed by medieval castle walls
+wfBalcony|城のバルコニー|royal castle balcony|a stone balcony projecting from a royal castle`),
+    group('town', '街・建築', `wfCobbles|中世風の石畳の街|medieval fantasy cobblestone street|a cobbled street in a medieval fantasy town
+wfSquare|城下町の広場|medieval castle town square|a town square beneath the walls of a castle
+wfMarket|中世風の市場|medieval fantasy marketplace|a medieval marketplace lined with wooden stalls
+wfBridge|古い石橋|ancient stone bridge|an old stone bridge spanning a river
+wfGuild|冒険者ギルド|fantasy adventurers’ guild hall|the timber-framed hall of an adventurers’ guild
+wfTavern|中世風の酒場|medieval fantasy tavern interior|the common room of a medieval tavern`),
+    group('wilds', '自然・冒険', `wfForest|魔法の森|enchanted fantasy forest|an enchanted forest of ancient, twisting trees
+wfMeadow|幻想的な花畑|fantasy wildflower meadow|a meadow carpeted with otherworldly wildflowers
+wfLake|霧の湖畔|misty fantasy lakeshore|a lakeshore edged with banks of mist
+wfRuins|古代遺跡|ancient fantasy ruins|a ruined complex of ancient stone arches
+wfPass|山岳の峠|mountain pass in a fantasy kingdom|a narrow pass between the mountains of a fantasy kingdom
+wfFalls|滝のある渓谷|fantasy valley with a waterfall|a steep valley with a waterfall spilling over its cliffs`),
+    group('magic', '魔法・神秘', `wfAcademy|魔法学院|fantasy magic academy|an academy of magic with connected towers
+wfArchive|魔導書の書庫|ancient arcane library|an ancient library with shelves of spellbooks
+wfWorkshop|錬金術師の工房|alchemist’s workshop|an alchemist’s workshop with glass vessels on a workbench
+wfAltar|魔法の祭壇|arcane stone altar|a stone altar inscribed with arcane symbols
+wfCavern|水晶洞窟|glowing crystal cavern|a cavern lined with luminous crystals
+wfObservatory|魔法学院の天文台|magic academy observatory|a domed observatory at an academy of magic`),
+    group('sanctuary', '教会・聖域', `wfCathedral|荘厳な大聖堂|grand Gothic fantasy cathedral|a grand Gothic cathedral with soaring pointed arches
+wfCloister|修道院の回廊|medieval monastery cloister|a covered cloister around a monastery garden
+wfChapel|ステンドグラスの礼拝堂|chapel with stained glass windows|a small chapel with stained glass windows
+wfSpring|聖なる泉|sacred spring in a fantasy sanctuary|a sacred spring within a woodland sanctuary`)
+  ]},
+  {id: 'desertFantasy', label: 'アラビアン・砂漠ファンタジー', children: [
+    group('palace', '王宮・建築', `dfCourt|砂漠王宮の中庭|courtyard of a desert fantasy palace|a courtyard enclosed by the arcades of a desert palace
+dfArcade|アーチ状の回廊|ornate arched palace corridor|a palace corridor framed by a succession of carved arches
+dfTiles|幾何学模様の広間|grand hall with geometric tile patterns|a grand hall paved with tiles in geometric patterns
+dfGarden|噴水のある宮殿庭園|palace garden with a central fountain|a walled palace garden arranged around a central fountain
+dfTerrace|王宮の屋上テラス|rooftop terrace of a desert palace|a broad rooftop terrace on a desert palace
+dfChamber|王族の私室（砂漠王宮）|private chamber in a desert palace|a private royal chamber with a carved screen in a desert palace
+dfDome|ドーム天井の大広間|grand palace hall with a domed ceiling|a grand palace hall beneath a high dome
+dfLattice|格子窓のある部屋|palace room with ornate lattice windows|a palace room with intricately carved lattice windows`),
+    group('bazaar', '街・市場', `dfBazaar|賑やかなバザール|bustling fantasy desert bazaar|a bustling bazaar in a desert city
+dfSouk|スークの路地|narrow alley in a souk|a narrow alley between the stalls of a souk
+dfSpice|香辛料店|spice stall in a bazaar|a bazaar stall with mounds of spices in shallow baskets
+dfTextiles|織物商の店|textile shop in a desert bazaar|a textile shop with bolts of colorful fabric
+dfGate|砂漠都市の城門|monumental gate of a desert city|a monumental gate in the walls of a desert city
+dfRoof|砂漠都市の屋上|rooftop overlooking a desert city|a flat rooftop above the winding streets of a desert city`),
+    group('journey', '砂漠・旅', `dfDunes|広大な砂丘|vast rolling desert dunes|a vast expanse of rolling sand dunes
+dfOasis|オアシス|lush oasis surrounded by desert dunes|a palm-fringed oasis surrounded by dunes
+dfRocks|砂漠の岩山|rugged desert rock formations|a cluster of rugged rock formations rising from the desert
+dfRoute|隊商の通る道|ancient caravan route through the desert|an ancient caravan route winding through the desert
+dfCamp|砂漠の野営地|caravan campsite in the desert|a caravan campsite with canvas tents in the desert
+dfCave|岩窟の入口|cave entrance in desert cliffs|a cave entrance at the base of desert cliffs`),
+    group('mystic', '神秘・幻想', `dfTemple|砂漠の古代神殿|ancient temple in a fantasy desert|an ancient stone temple rising from the desert sands
+dfLamps|魔法のランプが並ぶ部屋|chamber filled with enchanted lamps|a chamber lined with shelves of enchanted lamps
+dfWaterway|地下水路の遺跡|ruined underground waterway|a ruined underground waterway with stone channels
+dfFountain|青いタイルの神秘的な泉|enchanted fountain with blue mosaic tiles|an enchanted fountain lined with blue mosaic tiles`)
+  ]},
   {id: 'other', label: 'その他の背景', children: [
     group('outdoor', '屋外', `garden|屋外 · 庭園|flower garden|a flower garden
 street|屋外 · 石畳の道|cobblestone street|a cobblestone street`),
