@@ -2,6 +2,8 @@
 
 ひとりのオリジナルキャラクターを軸に、物語の一場面を画像生成AI向けの英語プロンプトに組み立てる無料の静的Webアプリです。初回は銀髪の「レイ」が温室で振り返るサンプルを開きます。
 
+[公開版の編集室を開く](https://nyuriwossan.github.io/character-scene-prompt-workshop/)
+
 ## 最初の一枚
 
 1. 「キャラクター素体」で名前・メモ・外見を設定します。手持ちのタグや英文は「直接入力」へ貼り付けます。素体・衣装・画風をひとまとめにした文章は「既存プロンプトを一括入力」を開き、採用にチェックを入れます。
@@ -51,7 +53,9 @@ python3 -m http.server 8000 --directory dist
 
 ブラウザで http://localhost:8000/ を開きます。ESモジュールを使うので、展開したHTMLはHTTP経由で開いてください。
 
-新しいGitHubリポジトリ（例 character-scene-prompt-workshop）に、このソース一式を置きます。Settings → Pages → Build and deployment の Source を GitHub Actions にし、Actions の「Publish workshop to GitHub Pages」を実行してください。mainへのpushでもテスト後にdistを配信できます。既存3工房との共有設定やリポジトリ変更は不要です。すべてのアセット参照は相対パスなので、リポジトリ名を含むサブパスに配置できます。
+このリポジトリは、GitHub Pagesの「Deploy from a branch」で `gh-pages` の `/ (root)` を配信します。`main` へのpushで「Publish workshop to GitHub Pages」がテストとZIP生成を行い、配信用ファイルを `gh-pages` に反映してビルドを要求します。公開結果はActionsの「pages build and deployment」で確認できます。
+
+別の新規リポジトリに移す場合は、最初に `main` にソース一式をコミットし、`git subtree push --prefix dist origin gh-pages` で配信用ブランチを作成します。Settings → Pages で `gh-pages` のルートを選び、Actionsから「Publish workshop to GitHub Pages」を実行してください。アセットは相対パスで読み込みます。
 
 ## テスト
 
