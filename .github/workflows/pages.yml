@@ -5,7 +5,7 @@ on:
     branches: [main]
 permissions:
   contents: write
-  pages: write
+  actions: write
 concurrency:
   group: workshop-pages
   cancel-in-progress: false
@@ -29,11 +29,11 @@ jobs:
           git fetch origin refs/heads/gh-pages
           publish_dir="$RUNNER_TEMP/workshop-pages"
           git worktree add --detach "$publish_dir" FETCH_HEAD
-          rsync -a --delete --exclude='/.git' dist/ "$publish_dir/"
+          rsync -a --delete --exclude='/.git' --exclude='/.github' dist/ "$publish_dir/"
           touch "$publish_dir/.nojekyll"
           git -C "$publish_dir" add --all
           if ! git -C "$publish_dir" diff --cached --quiet; then
             git -C "$publish_dir" -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Publish workshop from $GITHUB_SHA"
             git -C "$publish_dir" push origin HEAD:refs/heads/gh-pages
           fi
-          gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" --silent
+          gh workflow run deploy-release.yml --ref gh-pages
