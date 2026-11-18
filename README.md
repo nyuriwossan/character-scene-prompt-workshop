@@ -53,9 +53,9 @@ python3 -m http.server 8000 --directory dist
 
 ブラウザで http://localhost:8000/ を開きます。ESモジュールを使うので、展開したHTMLはHTTP経由で開いてください。
 
-このリポジトリは、GitHub Pagesの「Deploy from a branch」で `gh-pages` の `/ (root)` を配信します。`main` へのpushで「Publish workshop to GitHub Pages」がテストとZIP生成を行い、配信用ファイルを `gh-pages` に反映してビルドを要求します。公開結果はActionsの「pages build and deployment」で確認できます。
+このリポジトリは、GitHub Pagesの「Deploy from a branch」で `gh-pages` の `/ (root)` を配信します。`main` へのpushで「Publish workshop to GitHub Pages」がテストとZIP生成を行い、配信用ファイルを `gh-pages` に反映します。続いて公開ブランチ上の「Deploy workshop release」が実行され、公開結果を確認できます。
 
-別の新規リポジトリに移す場合は、最初に `main` にソース一式をコミットし、`git subtree push --prefix dist origin gh-pages` で配信用ブランチを作成します。Settings → Pages で `gh-pages` のルートを選び、Actionsから「Publish workshop to GitHub Pages」を実行してください。アセットは相対パスで読み込みます。
+別の新規リポジトリに移す場合は、最初に `main` にソース一式をコミットし、`dist/` の内容と `.github/workflows/deploy-release.yml` を同じ構成で配信用の `gh-pages` ブランチに配置します。配信ワークフローを変更するときは、両方のブランチで同じ版に更新してください。Settings → Pages で `gh-pages` のルートを選び、Actionsから「Publish workshop to GitHub Pages」を実行してください。アセットは相対パスで読み込みます。
 
 ## テスト
 
