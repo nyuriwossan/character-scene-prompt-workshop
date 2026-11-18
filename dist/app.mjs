@@ -127,24 +127,45 @@ function pickerResults({section,field,selected,view}) {
   return '<div class="picker-choices">'+(choices||'<span class="muted">一致する候補がありません。</span>')+'</div>'+pager
 }
 
+const pickerData = (section,field) => 'data-section="'+section+'" data-field="'+field.id+'"'
+function pickerFilter(label,key,options,data) {
+  return '<label class="field">'+label+'<select data-key="'+key+'" '+data+'>'+options+'</select></label>'
+}
+function secondaryFilter({section,field,view}) {
+  const data = pickerData(section,field)
+  const category = field.categories.find(c=>c.id===view.category)
+  if (!category) return '<label class="field">候補を検索<input type="search" data-key="pick-search" '+data+' value="'+attr(view.search)+'" placeholder="日本語名・英語タグ"></label>'
+  if (category.children.length) return pickerFilter('小分類','pick-subcategory',opts(categoryLabels(category.children),view.subcategory),data)
+  return ''
+}
 function categoryPicker(section, field) {
   const context = pickerContext(section,field.id)
   const {selected,view} = context
-  const data = 'data-section="'+section+'" data-field="'+field.id+'"'
-  const category = field.categories.find(c=>c.id===view.category)
-  const filter = (label,key,options) => '<label class="field">'+label+'<select data-key="'+key+'" '+data+'>'+options+'</select></label>'
-  const top = filter(field.label+'カテゴリ','pick-category',opts(categoryLabels(field.categories),view.category,'すべて'))
-  const sub = category?.children.length ? filter('小分類','pick-subcategory',opts(categoryLabels(category.children),view.subcategory)) : ''
-  const search = !category ? '<label class="field">候補を検索<input type="search" data-key="pick-search" '+data+' value="'+attr(view.search)+'" placeholder="日本語名・英語タグ"></label>' : ''
+  const data = pickerData(section,field)
+  const top = pickerFilter(field.label+'カテゴリ','pick-category',opts(categoryLabels(field.categories),view.category,'すべて'),data)
   const clear = button('pick-value','指定なし','','small-btn picker-choice',data+' data-value="" aria-pressed="'+(!selected)+'"')
   const current = selected ? shortLabel(field.options[selected]) : '指定なし'
-  return '<fieldset class="category-picker"><legend>'+field.label+'</legend><div class="picker-filters">'+top+sub+search+'</div><div class="picker-current"><span>選択中：<strong>'+esc(current)+'</strong></span>'+clear+'</div><div class="picker-results">'+pickerResults(context)+'</div></fieldset>'
+  return '<fieldset class="category-picker"><legend>'+field.label+'</legend><div class="picker-filters">'+top+secondaryFilter(context)+'</div><div class="picker-current"><span>選択中：<strong>'+esc(current)+'</strong></span>'+clear+'</div><div class="picker-results">'+pickerResults(context)+'</div></fieldset>'
 }
 
-function chooseValue(section, field, value) {
+function chooseValue(section, field, value, picker) {
+  if (picker && (draft().sections[section].values[field] || '') === value) return
   draft().sections[section].values[field] = value
   if (sceneIds.includes(section)) draft().preset = ''
-  updateAll()
+  if (!picker) return updateAll()
+  for (const choice of picker.querySelectorAll('[data-action="pick-value"]')) {
+    choice.setAttribute('aria-pressed',String(choice.dataset.value===value))
+  }
+  const option = pickerContext(section,field).field.options[value]
+  picker.querySelector('.picker-current strong').textContent = option ? shortLabel(option) : '指定なし'
+  const card = $('.gallery .preset-card.selected')
+  if (card && !draft().preset) {
+    card.classList.remove('selected')
+    card.setAttribute('aria-pressed','false')
+    card.querySelector('.chosen')?.remove()
+  }
+  persistNow()
+  liveOutput()
 }
 
 function selectField(id,f){
@@ -277,10 +298,14 @@ document.addEventListener('click',async e=>{
     case 'mode':s.mode=b.dataset.value;if(sceneIds.includes(k))d.preset='';updateAll();break
     case 'toggle-lock':s.locked=!s.locked;updateAll();break
     case 'pick-value':
-      chooseValue(b.dataset.section,b.dataset.field,b.dataset.value);break
+      chooseValue(b.dataset.section,b.dataset.field,b.dataset.value,b.closest('.category-picker'));break
     case 'pick-page':{
-      const {view}=pickerContext(b.dataset.section,b.dataset.field)
-      view.page+=Number(b.dataset.step);render();break
+      const context=pickerContext(b.dataset.section,b.dataset.field)
+      context.view.page+=Number(b.dataset.step)
+      const results=b.closest('.picker-results')
+      results.innerHTML=pickerResults(context)
+      results.querySelector('.picker-choice')?.focus({preventScroll:true})
+      break
     }
     case 'camera-tab':cameraTab=k;render();break
     case 'camera-choice':d.sections.camera.values[cameraTab]=k;d.preset='';updateAll();break
@@ -377,12 +402,21 @@ document.addEventListener('input',e=>{
 document.addEventListener('change',async e=>{
   const el=e.target,d=draft(),k=el.dataset.key
   if(k==='pick-category'||k==='pick-subcategory'){
-    const {field,view}=pickerContext(el.dataset.section,el.dataset.field)
+    const context=pickerContext(el.dataset.section,el.dataset.field)
+    const {field,view}=context
     if(k==='pick-category'){
       view.category=el.value
       view.subcategory=field.categories.find(c=>c.id===el.value)?.children[0]?.id || ''
     }else view.subcategory=el.value
-    view.page=0;view.search='';render()
+    view.page=0;view.search=''
+    const picker=el.closest('.category-picker')
+    // Keep the native select and its focus alive while the menu closes.
+    if(k==='pick-category'){
+      const label=el.closest('label')
+      label.nextElementSibling?.remove()
+      label.insertAdjacentHTML('afterend',secondaryFilter(context))
+    }
+    picker.querySelector('.picker-results').innerHTML=pickerResults(context)
   }else if(k==='value')chooseValue(el.dataset.section,el.dataset.field,el.value)
   else if(k==='format'){d.format=el.value;persistNow();liveOutput()}
   else if(el.id==='importfile'&&el.files.length){

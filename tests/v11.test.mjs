@@ -66,19 +66,25 @@ test('categorized dictionaries have stable unique IDs and labels, nonempty Engli
   assert.equal(oldFaces.every(k=>Object.hasOwn(faceField.options,k)),true)
   assert.equal(oldPlaces.every(k=>Object.hasOwn(placeField.options,k)),true)
   assert.equal(Object.keys(faceField.options).length-oldFaces.length,18)
-  assert.equal(Object.keys(placeField.options).length-oldPlaces.length,59)
+  assert.equal(Object.keys(placeField.options).length,120)
+  const expected={modernJapan:[10,12,10,9,8,10],westernFantasy:[8,6,6,6,4],desertFantasy:[8,6,6,4],other:[2,3,1,1]}
+  assert.deepEqual(placeField.categories.map(c=>c.id),Object.keys(expected))
+  for(const c of placeField.categories){
+    assert.deepEqual(c.children.map(sub=>Object.values(placeField.options).filter(o=>o.category===c.id&&o.subcategory===sub.id).length),expected[c.id])
+  }
   const japanese=Object.values(placeField.options).filter(o=>o.category==='modernJapan')
   assert.deepEqual(placeField.categories[0].children.map(g=>japanese.filter(o=>o.subcategory===g.id).length),[10,12,10,9,8,10])
   assert.deepEqual(faceField.categories.map(c=>Object.values(faceField.options).filter(o=>o.category===c.id).length),[3,7,4,3,7,5,5,5])
 })
 
-test('all 105 place and face options generate only their tag or the complete natural sentence and round-trip',()=>{
+test('all place and face options generate only their tag or the complete natural sentence and round-trip',()=>{
   for(const [section,field] of [['bg',placeField],['emotion',faceField]]){
     for(const [id,o] of Object.entries(field.options)){
       const store=newStore(false),d=store.draft
       d.sections[section].values[field.id]=id
       for(const format of EnglishTags)assert.equal(generate(d,format),format==='md'?'## '+byId[section].label+'\n'+o.tag:o.tag)
       for(const format of EnglishProse)assert.equal(generate(d,format),field.lead+o.prose+'.')
+      assert.equal(generate(d,'ja'),'【'+byId[section].label+'】\n'+o.ja)
       assert.equal(decode(JSON.stringify(store)).draft.sections[section].values[field.id],id)
       d.sections[section].mode='off'
       for(const format of Object.keys(formats))assert.equal(generate(d,format),'')

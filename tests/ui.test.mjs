@@ -247,3 +247,27 @@ test('initial name is a placeholder; typed and genuine v1.0 names survive reload
   assert.equal(q(pickerFilter('emotion','category')).value,'joy')
   assert.match(q('#prompt-value').textContent,/upper body shot/);assert.doesNotMatch(q('#prompt-value').textContent,/bust shot/)
 })
+
+test('changing picker filters and choosing values retain the live controls and focus',()=>{
+  for(const [section,category,subcategory,id] of [
+    ['emotion','confused','','puzzled'],['bg','desertFantasy','journey','dfCamp']
+  ]){
+    click('accordion',named('id',section))
+    for(const [level,value] of [['category',category],['subcategory',subcategory]]){
+      if(!value)continue
+      const control=q(pickerFilter(section,level))
+      control.focus()
+      const before=win.localStorage.getItem(storageKey)
+      setFilter(section,level,value)
+      assert.equal(control,doc.activeElement)
+      assert.equal(before,win.localStorage.getItem(storageKey))
+    }
+    const choice=q('[data-action="pick-value"]'+named('value',id))
+    choice.focus();choice.click()
+    assert.equal(choice,doc.activeElement)
+    assert.equal(choice.getAttribute('aria-pressed'),'true')
+    const selected=win.localStorage.getItem(storageKey)
+    choice.click()
+    assert.equal(selected,win.localStorage.getItem(storageKey))
+  }
+})
