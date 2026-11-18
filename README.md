@@ -4,6 +4,10 @@
 
 [公開版の編集室を開く](https://nyuriwossan.github.io/character-scene-prompt-workshop/)
 
+## v1.2.1 プルダウン操作の修正
+
+照明・時間帯・姿勢・撮影方向などの値を変えると、選択中のプルダウンを画面に残したまま、プロンプト・警告・自動保存・プリセットの選択表示を更新します。カテゴリと小分類では候補一覧を絞り込み、出力形式ではプレビューを切り替えます。
+
 ## v1.2での場面づくり
 
 「背景・照明」で大分類から小分類を選ぶと、その場所の候補が並びます。
@@ -88,6 +92,8 @@ python3 scripts/package-source.py
 単体テストにはNode.js標準のテストランナーを使います。UI操作の統合テストは開発用依存のjsdomで、実際のHTMLとイベントハンドラーを通して検証します。出力エンジン、保存・復元、リセット対象、警告、全プリセットの値、異常JSON・容量不足、GitHub Pages相当のサブパスを検証します。コード変更後は npm run --silent examples > EXAMPLES.md で出力例を更新できます。
 
 モバイルのタップ回帰テストは、`npx playwright install --with-deps chromium webkit` でブラウザを用意し、別のターミナルで `python3 -m http.server 8080 --directory dist` を起動して `npm run test:mobile` を実行します。公開先を指定する場合は `npm run test:mobile -- https://nyuriwossan.github.io/character-scene-prompt-workshop/` を使えます。幅360px・390pxのChromiumとWebKitで、カテゴリを変更した直後のタップ、表示、出力、保存、復元を確認します。iPhone Safariのネイティブ選択メニューの開閉は実機での確認対象です。
+
+全プルダウンの回帰テストは、同じローカルサーバーに対して `npm run test:selects` で実行できます。Chromium・WebKitを360px／390px幅で起動し、各欄をタップしてキー操作で候補を選びます。値と保存内容、プロンプト、警告、操作中の要素の同一性、意図しない再フォーカスを検証します。実機iPhoneでは、ホイールやメニューで別の候補を指で選び、そのまま隣の欄を開けるかが最終確認点です。
 
 ブラウザ検証は配信先の `checks/` を開き「検証を開始」を押します。390px幅・1280px幅のフレーム内で、背景・表情のカテゴリ選択と検索、7パネルの操作、保存・呼び出し、確認・キャンセル・取り消し、コピー対象、JSON読込、横スクロールを検証します。検証画面内の保存先とクリップボードはテスト用のメモリに分離しています。OSのクリップボードとの連携は編集室のコピーボタンで確認できます。
 

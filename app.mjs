@@ -149,15 +149,17 @@ function categoryPicker(section, field) {
 }
 
 function chooseValue(section, field, value, picker) {
-  if (picker && (draft().sections[section].values[field] || '') === value) return
+  if ((draft().sections[section].values[field] || '') === value) return
   draft().sections[section].values[field] = value
   if (sceneIds.includes(section)) draft().preset = ''
-  if (!picker) return updateAll()
-  for (const choice of picker.querySelectorAll('[data-action="pick-value"]')) {
-    choice.setAttribute('aria-pressed',String(choice.dataset.value===value))
+  // A select can still own its native popup during change. Keep it mounted.
+  if (picker) {
+    for (const choice of picker.querySelectorAll('[data-action="pick-value"]')) {
+      choice.setAttribute('aria-pressed',String(choice.dataset.value===value))
+    }
+    const option = pickerContext(section,field).field.options[value]
+    picker.querySelector('.picker-current strong').textContent = option ? shortLabel(option) : '指定なし'
   }
-  const option = pickerContext(section,field).field.options[value]
-  picker.querySelector('.picker-current strong').textContent = option ? shortLabel(option) : '指定なし'
   const card = $('.gallery .preset-card.selected')
   if (card && !draft().preset) {
     card.classList.remove('selected')
