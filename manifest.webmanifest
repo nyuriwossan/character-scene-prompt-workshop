@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "キャラ挿絵プロンプト工房",
+  "short_name": "挿絵工房",
+  "description": "キャラクターの外見を固定して、表情・ポーズ・構図・背景から物語の挿絵プロンプトをつくる無料の編集室。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f6f0",
+  "theme_color": "#f8f7f3",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/maskable-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
