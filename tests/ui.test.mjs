@@ -271,3 +271,33 @@ test('changing picker filters and choosing values retain the live controls and f
     assert.equal(selected,win.localStorage.getItem(storageKey))
   }
 })
+
+test('native selects survive change without scripted focus and update dependent UI before the next input',()=>{
+  for(const header of doc.querySelectorAll('.acc-head[aria-expanded="false"]'))header.click()
+  const originalFocus=win.HTMLElement.prototype.focus
+  let scriptedFocus=0
+  win.HTMLElement.prototype.focus=function(...args){
+    if(this.tagName==='SELECT')scriptedFocus++
+    return originalFocus.apply(this,args)
+  }
+  const ordinary=[...doc.querySelectorAll('select[data-key="value"]')]
+  for(const select of [...ordinary,q('[data-key="format"]')]){
+    const options=[...select.options].map(o=>o.value), [a,b,c]=options.slice(-3)
+    for(const value of [a,b,c,a,...(options.includes('')?['']:[])]){
+      select.value=value
+      select.dispatchEvent(new win.Event('change',{bubbles:true}))
+      assert.ok(select.isConnected,select.outerHTML)
+      const {section,field}=select.dataset
+      assert.equal(field?(saved().draft.sections[section].values[field]||''):saved().draft.format,value)
+    }
+  }
+  assert.equal(scriptedFocus,0)
+  assert.equal(q('.gallery .preset-card.selected'),null)
+  input('[data-key="format"]','tags','change')
+  input('[data-section="camera"][data-field="pov"]','pov','change')
+  input('[data-section="camera"][data-field="target"]','hero','change')
+  assert.match(q('#warnings').textContent,/主人公自身/)
+  assert.match(q('#prompt-value').textContent,/frontal view of the protagonist/)
+  input('[data-section="camera"][data-field="target"]','character','change')
+  assert.doesNotMatch(q('#warnings').textContent,/主人公自身/)
+})

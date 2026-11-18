@@ -1,12 +1,13 @@
 {
   "name": "character-scene-prompt-workshop",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "examples": "node tests/examples.mjs",
-    "test:mobile": "node tests/mobile.mjs"
+    "test:mobile": "node tests/mobile.mjs",
+    "test:selects": "node tests/selects.mjs"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",
