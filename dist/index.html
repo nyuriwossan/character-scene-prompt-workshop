@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f8f7f3"><meta name="description" content="キャラクターの外見を固定して、表情・ポーズ・構図・背景から物語の挿絵プロンプトをつくる無料の編集室。">
+<title>キャラ挿絵プロンプト工房</title><link rel="icon" href="./assets/mark.svg"><link rel="stylesheet" href="./style.css">
+</head><body><a class="skip" href="#workspace">編集画面へ</a>
+<header class="topbar"><div class="top-inner">
+<a class="brand" href="./" data-action="editor" aria-label="キャラ挿絵プロンプト工房 編集室"><span id="brandmark" class="brandmark"></span><span><b>キャラ挿絵プロンプト工房</b><small>CHARACTER SCENE WORKSHOP</small></span></a>
+<nav aria-label="メインナビゲーション" id="nav"></nav>
+</div></header>
+<main id="workspace" tabindex="-1"></main>
+<footer><span>キャラ挿絵プロンプト工房</span><a href="./character-scene-prompt-workshop.zip" download>ソース一式</a><button data-action="data">データ管理</button><button data-action="guide">使い方</button></footer>
+<dialog id="modal" aria-labelledby="modal-title"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<input id="importfile" type="file" accept=".json,application/json" hidden>
+<noscript>この工房を利用するにはJavaScriptを有効にしてください。</noscript>
+<script type="module" src="./app.mjs"></script></body></html>
