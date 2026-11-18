@@ -1,3 +1,4 @@
+import {placeField, placeWarnings} from './scene-options.mjs'
 import {sections, byId, fixedIds, sceneIds, presets, formats} from './catalog.mjs'
 export const clone = value => JSON.parse(JSON.stringify(value))
 export const schemaVersion = 1
@@ -9,7 +10,6 @@ export function blankDraft(){
 export function newStore(example=true){
   const draft=blankDraft()
   if(example){
-    draft.name='レイ'
     draft.sections.body.values={subject:'man',hair:'silver',cut:'layer',eyes:'teal'}
     draft.sections.outfit.values={clothes:'jacket'}
     draft.sections.style.values={medium:'otome'}
@@ -61,6 +61,12 @@ export function warnings(draft){
   if(['face','macro'].includes(shot)&&['reach','flowers','clasp'].includes(v('pose','hands')))issues.push('顔のアップでは手の動作が画面に収まりにくくなります。')
   if(['pov','hand'].includes(v('camera','pov'))&&v('camera','target')==='hero')issues.push('主人公視点と主人公自身の正面像が同時に指定されています。')
   if(v('bg','view')&&v('camera','angle'))issues.push('背景にも視点があります。出力にはカメラのアングルを優先します。')
+  const place=v('bg','place')
+  for(const rule of placeWarnings){
+    if(rule.places.includes(place)&&rule.values.includes(v('bg',rule.field))) {
+      issues.push(placeField.options[place].ja.split(' · ').at(-1)+'：'+rule.message)
+    }
+  }
   if(draft.useCombined&&draft.combined.trim()){
     const used=fixedIds.filter(id=>draft.sections[id].mode!=='off'&&sectionItems(draft,id).length)
     if(used.length)issues.push('一括入力と「'+used.map(id=>byId[id].label).join('」「')+'」を併用中です。重複する個別設定は「使用しない」で除外できます。')

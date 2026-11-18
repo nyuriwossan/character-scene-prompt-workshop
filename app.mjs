@@ -86,11 +86,73 @@ function cameraControls(s){
   const tiles=Object.entries(primary.options).map(([k,v])=>'<button type="button" data-action="camera-choice" data-id="'+k+'" class="camera-choice '+(s.values[cameraTab]===k?'selected':'')+'" aria-pressed="'+(s.values[cameraTab]===k)+'">'+shotDiagram(k,cameraTab)+'<span>'+esc(v.ja.split('（')[0])+'</span></button>').join('')
   return '<div class="camera-tools"><div class="camera-tabs">'+tabs+button('camera-clear','指定を外す','','subtle')+'</div><div class="camera-options">'+tiles+'</div></div><div class="fields">'+fields.slice(2).map(f=>selectField('camera',f)).join('')+'</div>'
 }
+// A restored scene or newly applied preset owns a new values object. Its picker
+// therefore opens at the saved option, even if the previous scene used the same ID.
+const pickerViews = new WeakMap()
+const pageSize = 12
+const shortLabel = option => option.ja.split(' · ').at(-1)
+const categoryLabels = categories => Object.fromEntries(categories.map(item => [item.id,item.label]))
+
+function pickerContext(section, fieldId) {
+  const field = byId[section].fields.find(f => f.id === fieldId)
+  const values = draft().sections[section].values
+  const selected = values[fieldId] || ''
+  if (!pickerViews.has(values)) pickerViews.set(values, new Map())
+  const views = pickerViews.get(values)
+  if (!views.has(fieldId)) {
+    const option = field.options[selected]
+    views.set(fieldId, {category:option?.category || '', subcategory:option?.subcategory || '', search:'', page:0})
+  }
+  return {section,field,selected,view:views.get(fieldId)}
+}
+
+function pickerResults({section,field,selected,view}) {
+  const query = view.search.normalize('NFKC').trim().toLowerCase()
+  const matches = Object.entries(field.options).filter(([,option]) => {
+    if (view.category && view.category !== option.category) return false
+    if (view.subcategory && view.subcategory !== option.subcategory) return false
+    return (option.ja+' '+option.tag).normalize('NFKC').toLowerCase().includes(query)
+  })
+  const data = 'data-section="'+section+'" data-field="'+field.id+'"'
+  const offset = view.page * pageSize
+  const choices = matches.slice(offset,offset+pageSize).map(([key,option]) =>
+    button('pick-value',esc(shortLabel(option)),'','small-btn picker-choice',data+' data-value="'+key+'" aria-pressed="'+(selected===key)+'"')
+  ).join('')
+  let pager = ''
+  if (matches.length > pageSize) {
+    const last = Math.ceil(matches.length/pageSize)-1
+    const nav = (step,label,disabled) => button('pick-page',label,'','small-btn',data+' data-step="'+step+'"'+(disabled?' disabled':''))
+    pager = '<div class="picker-pager">'+nav(-1,'前へ',view.page===0)+'<span>'+ (view.page+1)+' / '+(last+1)+'</span>'+nav(1,'次へ',view.page===last)+'</div>'
+  }
+  return '<div class="picker-choices">'+(choices||'<span class="muted">一致する候補がありません。</span>')+'</div>'+pager
+}
+
+function categoryPicker(section, field) {
+  const context = pickerContext(section,field.id)
+  const {selected,view} = context
+  const data = 'data-section="'+section+'" data-field="'+field.id+'"'
+  const category = field.categories.find(c=>c.id===view.category)
+  const filter = (label,key,options) => '<label class="field">'+label+'<select data-key="'+key+'" '+data+'>'+options+'</select></label>'
+  const top = filter(field.label+'カテゴリ','pick-category',opts(categoryLabels(field.categories),view.category,'すべて'))
+  const sub = category?.children.length ? filter('小分類','pick-subcategory',opts(categoryLabels(category.children),view.subcategory)) : ''
+  const search = !category ? '<label class="field">候補を検索<input type="search" data-key="pick-search" '+data+' value="'+attr(view.search)+'" placeholder="日本語名・英語タグ"></label>' : ''
+  const clear = button('pick-value','指定なし','','small-btn picker-choice',data+' data-value="" aria-pressed="'+(!selected)+'"')
+  const current = selected ? shortLabel(field.options[selected]) : '指定なし'
+  return '<fieldset class="category-picker"><legend>'+field.label+'</legend><div class="picker-filters">'+top+sub+search+'</div><div class="picker-current"><span>選択中：<strong>'+esc(current)+'</strong></span>'+clear+'</div><div class="picker-results">'+pickerResults(context)+'</div></fieldset>'
+}
+
+function chooseValue(section, field, value) {
+  draft().sections[section].values[field] = value
+  if (sceneIds.includes(section)) draft().preset = ''
+  updateAll()
+}
+
 function selectField(id,f){
+  if (f.categories) return categoryPicker(id,f)
   return '<label class="field">'+f.label+'<select data-key="value" data-section="'+id+'" data-field="'+f.id+'">'+opts(Object.fromEntries(Object.entries(f.options).map(([k,v])=>[k,v.ja])),draft().sections[id].values[f.id],'指定なし')+'</select></label>'
 }
 function characterTools(){
-  return '<div class="char-fields"><label class="field">キャラクター名<input data-key="name" placeholder="キャラクター名" value="'+attr(draft().name)+'"></label><label class="field">メモ<input data-key="memo" placeholder="性格や設定など" value="'+attr(draft().memo)+'"></label></div>'
+  return '<div class="char-fields"><label class="field">キャラクター名<input data-key="name" placeholder="キャラクター名を入力" value="'+attr(draft().name)+'"></label><label class="field">メモ<input data-key="memo" placeholder="性格や設定など" value="'+attr(draft().memo)+'"></label></div>'
 }
 function sectionBody(id){
   const d=draft(),s=d.sections[id]
@@ -214,6 +276,12 @@ document.addEventListener('click',async e=>{
     }
     case 'mode':s.mode=b.dataset.value;if(sceneIds.includes(k))d.preset='';updateAll();break
     case 'toggle-lock':s.locked=!s.locked;updateAll();break
+    case 'pick-value':
+      chooseValue(b.dataset.section,b.dataset.field,b.dataset.value);break
+    case 'pick-page':{
+      const {view}=pickerContext(b.dataset.section,b.dataset.field)
+      view.page+=Number(b.dataset.step);render();break
+    }
     case 'camera-tab':cameraTab=k;render();break
     case 'camera-choice':d.sections.camera.values[cameraTab]=k;d.preset='';updateAll();break
     case 'camera-clear':delete d.sections.camera.values[cameraTab];d.preset='';updateAll();break
@@ -293,6 +361,12 @@ document.addEventListener('click',async e=>{
 document.addEventListener('input',e=>{
   const el=e.target,k=el.dataset.key,d=draft()
   if(el.id==='record-name'){el.setCustomValidity('');return}
+  if(k==='pick-search'){
+    const context=pickerContext(el.dataset.section,el.dataset.field)
+    context.view.search=el.value;context.view.page=0
+    el.closest('.category-picker').querySelector('.picker-results').innerHTML=pickerResults(context)
+    return
+  }
   if(!k||el.tagName==='SELECT')return
   if(k==='name'||k==='memo')d[k]=el.value
   else if(k==='raw'||k==='extra')d.sections[el.dataset.section][k]=el.value
@@ -302,11 +376,15 @@ document.addEventListener('input',e=>{
 })
 document.addEventListener('change',async e=>{
   const el=e.target,d=draft(),k=el.dataset.key
-  if(k==='value'){
-    d.sections[el.dataset.section].values[el.dataset.field]=el.value
-    if(sceneIds.includes(el.dataset.section))d.preset=''
-    updateAll()
-  }else if(k==='format'){d.format=el.value;persistNow();liveOutput()}
+  if(k==='pick-category'||k==='pick-subcategory'){
+    const {field,view}=pickerContext(el.dataset.section,el.dataset.field)
+    if(k==='pick-category'){
+      view.category=el.value
+      view.subcategory=field.categories.find(c=>c.id===el.value)?.children[0]?.id || ''
+    }else view.subcategory=el.value
+    view.page=0;view.search='';render()
+  }else if(k==='value')chooseValue(el.dataset.section,el.dataset.field,el.value)
+  else if(k==='format'){d.format=el.value;persistNow();liveOutput()}
   else if(el.id==='importfile'&&el.files.length){
     try{
       const incoming=decode(await el.files[0].text())
