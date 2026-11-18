@@ -33,7 +33,7 @@ test('seven output formats, targeted wording and ordering',()=>{
   assert.match(generate(d,'sdxl'),/^solo, young man,/)
   assert.match(generate(d,'novel'),/^1boy, young man,/)
   assert.match(generate(d,'prose'),/The face shows a gentle smile\./)
-  assert.match(generate(d,'tsubaki'),/Frame the scene as a bust shot\./)
+  assert.match(generate(d,'tsubaki'),/Frame the scene as an upper-body portrait\./)
   assert.ok(generate(d,'tsubaki').indexOf('Frame the scene')<generate(d,'tsubaki').indexOf('The face shows'))
   assert.match(generate(d,'md'),/^## キャラクター素体\n/)
   assert.match(generate(d,'ja'),/【キャラクター素体】\n青年、銀髪/)

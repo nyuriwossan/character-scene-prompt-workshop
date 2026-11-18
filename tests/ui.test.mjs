@@ -53,6 +53,7 @@ test('character save, clothing variants, duplicate, confirmed recall and indepen
   assert.equal(saved().draft.name,'ノア');assert.deepEqual(saved().draft.sections.camera,before);assert.equal(saved().draft.variants[0].name,'冬服')
 })
 test('preset gallery previews affected fields, allows cancel and protects locked scene settings',()=>{
+  input('[data-key="name"]','レイ')
   click('accordion',named('id','bg'));click('toggle-lock',named('id','bg'))
   const bg=saved().draft.sections.bg
   click('all-presets');assert.equal(q('dialog').querySelectorAll('.preset-card').length,12)
@@ -63,6 +64,7 @@ test('preset gallery previews affected fields, allows cancel and protects locked
   click('next');click('confirm');assert.equal(saved().draft.sceneNo,2);assert.deepEqual(saved().draft.sections.bg,bg);assert.equal(saved().draft.name,'レイ')
 })
 test('reset confirmation, cancel, undo and protected saved records',()=>{
+  input('[data-key="name"]','レイ')
   click('mode',named('id','body')+named('value','raw'));input('[data-key="raw"]','test phrase')
   click('save-scene');input('#record-name','シーンA');click('confirm')
   const d=saved().draft
@@ -132,4 +134,116 @@ test('imported personal presets only display trusted local illustration sources'
   const personal=q('dialog [data-id="mine"]')
   assert.equal(personal.querySelector('img'),null)
   assert.ok(personal.textContent.includes('<カスタム>'))
+})
+
+const pickerFilter=(section,key)=>'[data-section="'+section+'"][data-key="pick-'+key+'"]'
+const setFilter=(section,key,value)=>input(pickerFilter(section,key),value,'change')
+const pick=(section,value)=>click('pick-value',named('section',section)+named('value',value))
+const visiblePicks=section=>[...doc.querySelectorAll('[data-action="pick-value"][data-section="'+section+'"]')].map(b=>b.dataset.value).filter(Boolean)
+
+test('every place and face can be selected through its actual category controls',async()=>{
+  const {faceField,placeField}=await import('../dist/scene-options.mjs')
+  for(const [section,field] of [['bg',placeField],['emotion',faceField]]){
+    click('accordion',named('id',section))
+    const chosen=new Set()
+    for(const c of field.categories){
+      setFilter(section,'category',c.id)
+      for(const leaf of c.children.length?c.children:[null]){
+        if(leaf)setFilter(section,'subcategory',leaf.id)
+        const expected=Object.keys(field.options).filter(k=>{
+          const o=field.options[k];return o.category===c.id&&(!leaf||o.subcategory===leaf.id)
+        })
+        assert.deepEqual(visiblePicks(section),expected)
+        for(const k of expected){
+          pick(section,k);chosen.add(k)
+          assert.equal(saved().draft.sections[section].values[field.id],k)
+          assert.ok(q('#prompt-value').textContent.includes(field.options[k].tag))
+        }
+      }
+    }
+    assert.equal(chosen.size,Object.keys(field.options).length)
+    pick(section,'');assert.equal(saved().draft.sections[section].values[field.id],'')
+  }
+})
+
+test('browsing, searching, paging and no-result searches preserve the selected record and the entire output',()=>{
+  click('accordion',named('id','bg'));click('accordion',named('id','emotion'))
+  const before=win.localStorage.getItem(storageKey),output=q('#prompt-value').textContent
+  setFilter('bg','category','modernJapan');setFilter('bg','subcategory','school')
+  assert.ok(!visiblePicks('bg').includes('glass'))
+  assert.match(q('#fields-bg .picker-current').textContent,/温室/)
+  setFilter('bg','category','')
+  assert.equal(visiblePicks('bg').length,12)
+  const first=visiblePicks('bg')
+  click('pick-page',named('section','bg')+named('step','1'))
+  assert.notDeepEqual(visiblePicks('bg'),first)
+  input(pickerFilter('bg','search'),'ＴＩＣＫＥＴ')
+  assert.deepEqual(visiblePicks('bg'),['jpTicketGates'])
+  input(pickerFilter('bg','search'),'教室')
+  assert.deepEqual(visiblePicks('bg'),['jpClassroom','jpAfterSchool'])
+  input(pickerFilter('bg','search'),'一致しない候補');assert.deepEqual(visiblePicks('bg'),[])
+  setFilter('emotion','category','confused')
+  assert.equal(win.localStorage.getItem(storageKey),before);assert.equal(q('#prompt-value').textContent,output)
+  pick('emotion','puzzled');assert.equal(saved().draft.sections.emotion.values.gaze,'viewer')
+})
+
+test('saved, imported and restored scenes focus their categories even after browsing elsewhere',async()=>{
+  click('accordion',named('id','bg'));click('accordion',named('id','emotion'))
+  setFilter('bg','category','modernJapan');setFilter('bg','subcategory','outings');pick('bg','jpAquarium')
+  setFilter('emotion','category','sulky');pick('emotion','pout')
+  click('save-scene');input('#record-name','水族館');click('confirm')
+  const data=win.localStorage.getItem(storageKey)
+  setFilter('bg','category','other');setFilter('emotion','category','joy')
+  click('library');click('lib-tab',named('id','scenes'));click('load-record');click('confirm')
+  const assertRestored=()=>{
+    assert.equal(q(pickerFilter('bg','category')).value,'modernJapan')
+    assert.equal(q(pickerFilter('bg','subcategory')).value,'outings')
+    assert.equal(q(pickerFilter('emotion','category')).value,'sulky')
+    assert.match(q('#fields-emotion .picker-current').textContent,/拗ねる/)
+  }
+  assertRestored()
+  setFilter('bg','category','other')
+  const file=q('#importfile')
+  Object.defineProperty(file,'files',{configurable:true,value:[{text:async()=>data}]})
+  file.dispatchEvent(new win.Event('change',{bubbles:true}));await tick();click('confirm')
+  assertRestored()
+  dom.window.close();await start(data);assertRestored()
+  click('preset',named('id','p01'));click('confirm')
+  assert.equal(q(pickerFilter('bg','subcategory')).value,'indoor')
+  assert.equal(q(pickerFilter('emotion','category')).value,'joy')
+})
+
+test('new choices survive modes, reset and undo; free inputs stay verbatim',()=>{
+  for(const [sec,cat,sub,key,id] of [['bg','modernJapan','streets','place','jpTicketGates'],['emotion','confused','','face','perplexed']]){
+    click('accordion',named('id',sec));setFilter(sec,'category',cat)
+    if(sub)setFilter(sec,'subcategory',sub)
+    pick(sec,id)
+    click('mode',named('id',sec)+named('value','raw'));assert.equal(q(pickerFilter(sec,'category')),null)
+    input('[data-key="raw"][data-section="'+sec+'"]','  bust shot\n(original gaze) ')
+    assert.ok(q('#prompt-value').textContent.includes('  bust shot\n(original gaze) '))
+    click('mode',named('id',sec)+named('value','off'));assert.equal(q(pickerFilter(sec,'category')),null)
+    click('mode',named('id',sec)+named('value','preset'));assert.equal(saved().draft.sections[sec].values[key],id)
+    click('reset-section',named('id',sec));assert.equal(saved().draft.sections[sec].values[key],undefined)
+    click('undo');assert.equal(saved().draft.sections[sec].values[key],id)
+    assert.equal(q(pickerFilter(sec,'category')).value,cat)
+  }
+  const before=saved().draft
+  for(const action of ['reset-scene','reset-all']){
+    click(action);click('confirm');click('undo');assert.deepEqual(saved().draft,before)
+  }
+})
+
+test('initial name is a placeholder; typed and genuine v1.0 names survive reload',async()=>{
+  assert.equal(q('[data-key="name"]').value,'')
+  assert.equal(q('[data-key="name"]').placeholder,'キャラクター名を入力')
+  assert.match(q('#prompt-value').textContent,/upper body shot/)
+  input('[data-key="name"]','あおい')
+  const data=win.localStorage.getItem(storageKey);dom.window.close();await start(data)
+  assert.equal(q('[data-key="name"]').value,'あおい')
+  const legacy=await readFile(new URL('./fixtures/v1-workshop.json',import.meta.url),'utf8')
+  dom.window.close();await start(legacy)
+  assert.equal(q('[data-key="name"]').value,'レイ')
+  assert.equal(q(pickerFilter('bg','subcategory')).value,'indoor')
+  assert.equal(q(pickerFilter('emotion','category')).value,'joy')
+  assert.match(q('#prompt-value').textContent,/upper body shot/);assert.doesNotMatch(q('#prompt-value').textContent,/bust shot/)
 })

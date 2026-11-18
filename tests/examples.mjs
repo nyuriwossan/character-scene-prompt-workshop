@@ -5,10 +5,14 @@ const parts=['# プロンプト出力例','以下は付属の出力エンジン�
 function example(name,draft,format){
   parts.push('## '+name,'~~~text\n'+generate(draft,format)+'\n~~~')
 }
-example('温室で振り返るレイ・汎用英語タグ',d,'tags')
+example('温室で振り返る人物・汎用英語タグ',d,'tags')
 applyPreset(d,presets[2])
-example('同じレイが手を差し伸べる・PixAI Tsubaki系',d,'tsubaki')
+example('同じ人物が手を差し伸べる・PixAI Tsubaki系',d,'tsubaki')
 example('同じ場面・NovelAI向け',d,'novel')
+d.sections.bg.values={place:'jpAfterSchool'}
+d.sections.emotion.values={face:'puzzled',gaze:'viewer'}
+d.sections.camera.values={shot:'bust'}
+example('放課後の教室で戸惑う・英語自然文',d,'prose')
 const free=blankDraft()
 free.sections.body.mode='raw';free.sections.body.raw='adult traveler, auburn hair, <lora:my_traveler:0.8>'
 free.sections.bg.mode='off';free.sections.style.mode='off'

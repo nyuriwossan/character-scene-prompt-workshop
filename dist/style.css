@@ -19,3 +19,29 @@ footer{display:flex;align-items:center;gap:18px;border-top:1px solid var(--borde
 @media(max-width:780px){.mobile-output{order:3;display:inline-flex;align-items:center;min-height:32px;font-size:10px;color:var(--accent-dark);text-decoration:none}}
 
 .modal-head h2,.preset-name,.variant strong{overflow-wrap:anywhere;min-width:0}.current-scene b{font-family:var(--sans)}
+
+/* Only the two larger dictionaries use the category picker. */
+.category-picker {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #f6f6ee;
+}
+.category-picker legend { padding: 0 4px; font-size: 12px; font-weight: 650; }
+.picker-filters { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,145px),1fr)); gap: 8px 12px; }
+.picker-current, .picker-pager { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.picker-current { justify-content: space-between; margin: 10px 0 8px; font-size: 12px; color: var(--muted); }
+.picker-current strong { color: var(--ink); }
+.picker-choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.picker-choice { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.picker-choice[aria-pressed="true"] { color: var(--accent-dark); border-color: var(--accent); background: var(--blush); }
+.picker-choice[aria-pressed="true"]::before { content: '✓'; }
+.picker-pager { justify-content: flex-end; margin-top: 8px; font-size: 11px; color: var(--muted); }
+@media (max-width:540px) {
+  .category-picker { padding: 8px 9px 10px; }
+  .picker-filters { grid-template-columns: minmax(0,1fr); }
+  .edit-panel .category-picker button { min-height: 44px; font-size: 12px; }
+}

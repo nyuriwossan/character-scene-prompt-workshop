@@ -35,6 +35,32 @@ run.addEventListener('click',async()=>{
       check(w.scrollY>0&&q('.copy-btn').contains(doc.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2)),'ボタンが隠れている')
       w.scrollTo(0,0)
     })
+    await scenario('390px幅で背景・表情を選択し、別カテゴリの閲覧中も出力を保持',async()=>{
+      const name=q('[data-key="name"]')
+      check(name.value===''&&name.placeholder==='キャラクター名を入力','初期キャラクター名が不正')
+      check(q('#prompt-value').textContent.includes('upper body shot'),'初期構図が不正')
+      act('accordion','[data-id="bg"]');act('accordion','[data-id="emotion"]')
+      const filter=(section,level)=>'[data-section="'+section+'"][data-key="pick-'+level+'"]'
+      value(filter('bg','category'),'modernJapan','change')
+      value(filter('bg','subcategory'),'streets','change')
+      const target='[data-action="pick-value"][data-value="jpTicketGates"]'
+      q(target).scrollIntoView({block:'center'});await tick()
+      const bounds=q(target).getBoundingClientRect()
+      check(q(target).contains(doc.elementFromPoint(bounds.x+bounds.width/2,bounds.y+bounds.height/2)),'背景候補をタップできません')
+      q(target).click()
+      value(filter('emotion','category'),'sulky','change')
+      act('pick-value','[data-value="puffedCheeks"]')
+      const out=q('#prompt-value').textContent
+      check(out.includes('Japanese station ticket gates')&&out.includes('puffed cheeks'),'選択値が出力に反映されません')
+      value(filter('bg','category'),'','change')
+      value(filter('bg','search'),'教室')
+      value(filter('emotion','category'),'confused','change')
+      check(q('#fields-bg .picker-choices').children.length===2,'日本語検索が不正')
+      check(q('#fields-bg .picker-current').textContent.includes('駅の改札'),'選択中の背景が不明')
+      check(q('#prompt-value').textContent===out,'絞り込みで出力が変化')
+      checkLayout()
+    })
+    await fixture();await tick()
     await scenario('全7パネルの開閉で出力を維持',()=>{
       const out=q('#prompt-value').textContent
       for(const b of doc.querySelectorAll('.acc-head')){

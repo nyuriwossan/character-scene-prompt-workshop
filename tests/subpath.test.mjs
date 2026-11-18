@@ -18,7 +18,7 @@ test('Page and every runtime dependency resolve under a GitHub Pages repository 
     const base='http://127.0.0.1:'+server.address().port+prefix
     const html=await(await fetch(base)).text()
     const deps=[...html.matchAll(/(?:src|href)="(\.\/[^"]+)"/g)].map(m=>m[1]).filter(p=>!p.endsWith('.zip'))
-    for(const filename of ['app.mjs','engine.mjs']){
+    for(const filename of ['app.mjs','engine.mjs','catalog.mjs']){
       const code=await readFile(join(root,filename),'utf8')
       deps.push(...[...code.matchAll(/from '(\.\/[^']+)'/g)].map(m=>m[1]))
     }

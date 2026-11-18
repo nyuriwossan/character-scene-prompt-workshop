@@ -1,3 +1,5 @@
+import {faceField, placeField} from './scene-options.mjs'
+
 // Each option has an independent Japanese label, English tag, and prose fragment.
 function field(id, label, rows, lead = '') {
   return {id, label, lead, options: Object.fromEntries(rows.split('\n').map(line => {
@@ -36,27 +38,7 @@ uniform|騎士の正装|ceremonial knight uniform|a ceremonial knight uniform`,'
 earring|銀の耳飾り|silver earring|a silver earring
 ribbon|リボン|silk ribbon|a silk ribbon`,'The look includes ')]},
   {id:'emotion',label:'表情・感情・視線',icon:'smile',fields:[
-    f('face','表情',`smile|喜び · 微笑み|gentle smile|a gentle smile
-beam|喜び · 満面の笑顔|beaming smile|a beaming smile
-relief|喜び · 安堵|relieved expression|an expression of relief
-blush|照れ · 頬を染める|blushing cheeks|a shy blush
-avert|照れ · 目を逸らす|bashful averted eyes|a bashful, averted look
-wry|照れ · 困った笑顔|awkward smile|an awkward smile
-lower|悲しみ · 伏し目|downcast eyes|a downcast expression
-teary|悲しみ · 涙ぐむ|tearful eyes|eyes bright with tears
-cry|悲しみ · 泣く|crying|tears rolling down the cheeks
-tearsmile|悲しみ · 泣き笑い|tearful smile|a smile through tears
-glare|怒り · 睨む|angry glare|an angry glare
-shout|怒り · 怒鳴る|shouting in anger|anger breaking into a shout
-anger|怒り · 静かな怒り|restrained anger|barely restrained anger
-wide|驚き · 目を見開く|wide-open eyes|eyes wide with surprise
-fluster|驚き · 動揺|flustered expression|a flustered expression
-stun|驚き · 呆然|stunned expression|a stunned expression
-neutral|その他 · 無表情|neutral expression|a neutral expression
-knowing|その他 · 余裕の笑み|knowing smile|a knowing smile
-taunt|その他 · 挑発|taunting smile|a taunting smile
-wist|その他 · 切なさ|wistful expression|a wistful expression
-tense|その他 · 緊張|nervous smile|a nervous smile`,'The face shows '),
+    faceField,
     f('gaze','視線',`viewer|カメラを見る|looking at viewer|directed toward the viewer
 other|相手を見る|looking at the other person|directed toward the other person
 away|目を逸らす|looking away|turned aside
@@ -83,7 +65,7 @@ clasp|手を握りしめる|clasped hands|clasps both hands`,'The character ')]}
   {id:'camera',label:'カメラ・構図',icon:'focus',fields:[
     f('shot','撮影距離',`macro|超アップ|extreme close-up|an extreme close-up
 face|顔アップ|facial close-up|a facial close-up
-bust|胸上|bust shot|a bust shot
+bust|胸上|upper body shot|an upper-body portrait
 waist|腰上|waist-up shot|a waist-up shot
 knee|膝上|knee-up shot|a knee-up shot
 full|全身|full-body shot|a full-body shot
@@ -113,13 +95,7 @@ space|背景を広く見せる|expansive background|against an expansive backgro
     f('target','画面に映す対象',`character|キャラクター|featured character|the featured character
 hero|主人公自身の正面|frontal view of the protagonist|the protagonist seen from the front`,'The image shows ')]},
   {id:'bg',label:'背景・照明',icon:'sun',fields:[
-    f('place','背景',`garden|屋外 · 庭園|flower garden|a flower garden
-glass|室内 · 温室|glass conservatory|a glass conservatory
-library|室内 · 書斎|quiet library|a quiet library
-window|室内 · 窓辺|tall arched window|a room with a tall arched window
-street|屋外 · 石畳の道|cobblestone street|a cobblestone street
-forest|幻想 · 星明かりの森|starlit enchanted forest|an enchanted forest lit by stars
-plain|シンプル · 無地|plain backdrop|a plain backdrop`,'The setting is '),
+    placeField,
     f('light','照明',`sun|木漏れ日|dappled sunlight
 rim|輪郭を照らす光|warm rim lighting
 soft|拡散光|soft diffused light

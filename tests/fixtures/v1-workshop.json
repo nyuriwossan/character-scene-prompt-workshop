@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "draft": {
+    "name": "レイ",
+    "memo": "旧版の名前と自由文を保持",
+    "combined": "",
+    "useCombined": false,
+    "variants": [],
+    "sceneName": "振り返って微笑む",
+    "sceneNo": 1,
+    "preset": "p01",
+    "format": "tags",
+    "sections": {
+      "body": {
+        "mode": "preset",
+        "raw": "",
+        "extra": "",
+        "values": {
+          "subject": "man",
+          "hair": "silver",
+          "cut": "layer",
+          "eyes": "teal"
+        },
+        "open": true,
+        "locked": true
+      },
+      "outfit": {
+        "mode": "preset",
+        "raw": "",
+        "extra": "",
+        "values": {
+          "clothes": "jacket"
+        },
+        "open": false,
+        "locked": true
+      },
+      "emotion": {
+        "mode": "preset",
+        "raw": "",
+        "extra": "",
+        "values": {
+          "face": "smile",
+          "gaze": "viewer"
+        },
+        "open": true,
+        "locked": false
+      },
+      "pose": {
+        "mode": "preset",
+        "raw": "",
+        "extra": "",
+        "values": {
+          "stance": "stand",
+          "motion": "turn",
+          "hands": ""
+        },
+        "open": false,
+        "locked": false
+      },
+      "camera": {
+        "mode": "preset",
+        "raw": "  bust shot, <lora:my-oc:0.8>\n",
+        "extra": "",
+        "values": {
+          "shot": "bust",
+          "angle": "eye",
+          "direction": "rear3",
+          "pov": "third",
+          "layout": "center"
+        },
+        "open": false,
+        "locked": false
+      },
+      "bg": {
+        "mode": "preset",
+        "raw": "",
+        "extra": "",
+        "values": {
+          "place": "glass",
+          "light": "sun",
+          "time": "day",
+          "weather": ""
+        },
+        "open": true,
+        "locked": false
+      },
+      "style": {
+        "mode": "preset",
+        "raw": "",
+        "extra": "",
+        "values": {
+          "medium": "otome"
+        },
+        "open": false,
+        "locked": true
+      }
+    }
+  },
+  "characters": [
+    {
+      "id": "c1",
+      "name": "レイ",
+      "date": "2026-11-18",
+      "data": {
+        "name": "レイ",
+        "memo": "旧版の名前と自由文を保持",
+        "combined": "",
+        "useCombined": false,
+        "variants": [],
+        "sections": {
+          "body": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "subject": "man",
+              "hair": "silver",
+              "cut": "layer",
+              "eyes": "teal"
+            },
+            "open": true,
+            "locked": true
+          },
+          "outfit": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "clothes": "jacket"
+            },
+            "open": false,
+            "locked": true
+          },
+          "style": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "medium": "otome"
+            },
+            "open": false,
+            "locked": true
+          }
+        }
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "id": "s1",
+      "name": "振り返って微笑む",
+      "date": "2026-11-18",
+      "data": {
+        "name": "レイ",
+        "memo": "旧版の名前と自由文を保持",
+        "combined": "",
+        "useCombined": false,
+        "variants": [],
+        "sceneName": "振り返って微笑む",
+        "sceneNo": 1,
+        "preset": "p01",
+        "format": "tags",
+        "sections": {
+          "body": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "subject": "man",
+              "hair": "silver",
+              "cut": "layer",
+              "eyes": "teal"
+            },
+            "open": true,
+            "locked": true
+          },
+          "outfit": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "clothes": "jacket"
+            },
+            "open": false,
+            "locked": true
+          },
+          "emotion": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "face": "smile",
+              "gaze": "viewer"
+            },
+            "open": true,
+            "locked": false
+          },
+          "pose": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "stance": "stand",
+              "motion": "turn",
+              "hands": ""
+            },
+            "open": false,
+            "locked": false
+          },
+          "camera": {
+            "mode": "preset",
+            "raw": "  bust shot, <lora:my-oc:0.8>\n",
+            "extra": "",
+            "values": {
+              "shot": "bust",
+              "angle": "eye",
+              "direction": "rear3",
+              "pov": "third",
+              "layout": "center"
+            },
+            "open": false,
+            "locked": false
+          },
+          "bg": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "place": "glass",
+              "light": "sun",
+              "time": "day",
+              "weather": ""
+            },
+            "open": true,
+            "locked": false
+          },
+          "style": {
+            "mode": "preset",
+            "raw": "",
+            "extra": "",
+            "values": {
+              "medium": "otome"
+            },
+            "open": false,
+            "locked": true
+          }
+        }
+      }
+    }
+  ],
+  "customPresets": [
+    {
+      "id": "custom1",
+      "name": "旧版の構図",
+      "tone": "マイプリセット",
+      "values": {
+        "emotion": {
+          "face": "smile",
+          "gaze": "viewer"
+        },
+        "pose": {
+          "stance": "stand",
+          "motion": "turn",
+          "hands": ""
+        },
+        "camera": {
+          "shot": "bust",
+          "angle": "eye",
+          "direction": "rear3",
+          "pov": "third",
+          "layout": "center"
+        },
+        "bg": {
+          "place": "glass",
+          "light": "sun",
+          "time": "day",
+          "weather": ""
+        }
+      }
+    }
+  ]
+}
